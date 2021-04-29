@@ -77,37 +77,25 @@ lsr  r6,r0,#0x10
 bx   lr
 
 // ---------------------------------------------------------------------------------------
-// Fixes printing in the memo screen. Also changes position of the right column in the withdrawing menu
+// Fixes position of text in the memo screen
 // ---------------------------------------------------------------------------------------
 
-.memo_printfix_withdraw_positionfix:
+.memo_printfix_positionfix:
 push {lr}
-ldr  r2,=#0x201A288
-ldrb r2,[r2,#0]
-cmp  r2,#6
-beq  .memo_printfix_withdraw_positionfix_memo
 lsl  r1,r0,#1
 add  r1,r1,r0
 lsl  r1,r1,#2
-b    .memo_printfix_withdraw_positionfix_end
-
-.memo_printfix_withdraw_positionfix_memo:
-mov  r0,r5
-sub  r0,#0x2
-cmp  r0,#1                         //Is this the first letter?
-beq  +
-mov  r0,#1                         //If it's not, check if it's an icon
-sub  r1,r4,#4
-ldr  r1,[r1,#0]
-cmp  r1,#0
+ldr  r2,=#0x201A288
+ldrb r2,[r2,#0]
+cmp  r2,#5
 bne  +
-mov  r0,#2                         //Cover case when done with memo icon
+cmp  r0,#0xA
+bne  .memo_printfix_positionfix_left
+sub  r1,r1,#1                // Put this 1 pixel more to the left
+b    +
+.memo_printfix_positionfix_left:
+add  r1,r1,#3                // Put this 3 pixels more to the right
 +
-lsl  r1,r0,#1                      //If it's not an icon, the line starts at 1
-add  r1,r1,r0
-lsl  r1,r1,#2
-
-.memo_printfix_withdraw_positionfix_end:
 strh r1,[r6,#0]
 pop  {pc}
 
@@ -349,6 +337,16 @@ and  r0,r1                         // clobbered code
 mov  r2,#0xFF                      // we want -5
 lsl  r2,r2,#0x8
 add  r2,#0xFB
+bx   lr
+
+// ---------------------------------------------------------------------------------------
+// Memoes menu
+.memoes_cursorfix1:
+and  r0,r1                         // clobbered code
+mov  r2,#0                         // we want -0x7
+sub  r2,#7
+lsl  r2,r2,#0x10
+lsr  r2,r2,#0x10
 bx   lr
 
 //---------------------------------------------------------------------------------------

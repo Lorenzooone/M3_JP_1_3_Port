@@ -19,6 +19,14 @@ org $9F92600; incbin sound_relocate_dump.bin
 // Enable memo menu; hold Sel+L+R while loading the Status menu
 org $804BE16; bl extra_hacks.memo_check
 
+// Make it so memo titles are printed earlier
+org $804760E; mov r1,#0
+org $8047642; mov r1,#0xA
+
+// Cursor positions for memoes menu
+org $8041558; bl extra_hacks.memoes_cursorfix1   // Memo, X, left column
+org $8041560; db $6C                             // Memo, X, right column
+
 // Memo name counter fixes
 org $8001DB0; push {lr}; bl extra_hacks.memo_counterfix1; pop {pc}
 org $8048500; bl extra_hacks.memo_counterfix2
@@ -26,26 +34,8 @@ org $8048500; bl extra_hacks.memo_counterfix2
 // Expand memo text
 org $804BFD4; bl extra_hacks.memo_stretch
 
-// Make printing work properly in the memo menu
-// org $8048B98; bl extra_hacks.memo_printfix_storage; nop; nop; nop
-// org $8049298; bl extra_hacks.memo_printfix_withdraw_positionfix; nop; nop
-// org $80492A4; bl extra_hacks.memo_printfix_vertical
-
-// Expand buffer size for a memo page
-// org $804807A; bl extra_hacks.memo_expand_buffer_start_routine
-// org $80480DA; bl extra_hacks.memo_expand_buffer_middle_routine
-// org $80480F0; bl extra_hacks.memo_expand_buffer_end_routine
-// org $80488BE; bl extra_hacks.memo_expand_writing_buffer
-// org $8048C34; bl extra_hacks.memo_expand_writing_buffer
-// org $8048100; dw $4284
-// org $80476BC; dd $0201A2AC
-
-// Make memo use strings terminated by 0xFFFFFFFF after every BREAK
-//org $80488F9; db $49; nop
-//org $8048904; bl extra_hacks.memo_eos
-
-// Make the pigmask not set the null memo flag
-//org $9369245; db $00
+// Change certain positions inside the memo menu
+org $8049298; bl extra_hacks.memo_printfix_positionfix; nop; nop
 
 org $804BC90; db $F0    // Increase size of cleared lines in menus so it fully covers the screen
 
