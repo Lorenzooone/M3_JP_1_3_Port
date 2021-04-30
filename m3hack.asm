@@ -1,5 +1,7 @@
 arch gba.thumb
 
+define saturn_font $8D1CE78
+
 //============================================================================================
 //                                     DATA FILES
 //============================================================================================
@@ -38,6 +40,13 @@ org $804BFD4; bl extra_hacks.memo_stretch
 org $8049298; bl extra_hacks.memo_printfix_positionfix; nop; nop
 
 org $804BC90; db $F0    // Increase size of cleared lines in menus so it fully covers the screen
+
+// Make 0xFF0B prepare Saturn font's usage in Memoes
+org $80488F9; db $49; nop
+org $8048904; bl extra_hacks.memo_saturn_prepare
+
+// Load Saturn Font in Memoes
+org $8048D00; bl extra_hacks.memo_saturn_font_load
 
 // Fix the text being loaded
 org $80486DA; bl extra_hacks.memo_change_text_loading_routine

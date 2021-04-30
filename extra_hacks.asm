@@ -223,6 +223,63 @@ bl   $804BFCC                      // Memo
 pop  {pc}
 
 // ---------------------------------------------------------------------------------------
+// Makes it so the memo screen can use the Saturn Font
+// ---------------------------------------------------------------------------------------
+
+.memo_saturn_prepare:
+push {lr}
+ldr  r1,=#0x201A288
+ldrb r1,[r1,#0]
+cmp  r1,#6                   // Is this the Memo menu?
+bne  .memo_saturn_default
+mov  r1,#0xFF
+lsl  r1,r1,#8
+add  r1,#0xB
+cmp  r1,r3
+bne  .memo_saturn_default
+
+ldr  r1,=#0x201AEF8
+mov  r3,#1                   // Save Saturn Font usage
+strb r3,[r1,#3]
+
+.memo_saturn_default:
+mov  r1,#1
+orr  r0,r1
+strb r0,[r2,#2]
+
+.memo_saturn_end:
+pop  {pc}
+
+// ---------------------------------------------------------------------------------------
+// Change to the Saturn Font if the proper flag is set
+// ---------------------------------------------------------------------------------------
+
+.memo_saturn_font_load:
+push {lr}
+ldr  r1,=#0x201A288
+ldrb r1,[r1,#0]
+cmp  r1,#6                   // Is this the Memo menu?
+bne  .memo_saturn_font_load_end
+ldrb r1,[r4,#3]
+cmp  r1,#1                   // Do we need to load the Saturn Font?
+bne  .memo_saturn_font_load_end
+ldr  r1,=#0x20225C4          // Loaded font's address
+ldr  r2,=#{saturn_font}
+str  r2,[r1,#0]              // Save Saturn font
+add  r1,#0x10
+ldrb r2,[r1,#0]
+mov  r0,#0x40
+lsl  r2,r2,#0x1C
+lsr  r2,r2,#0x1C
+orr  r0,r2
+strb r0,[r1,#0]              // Save that we're loading the Saturn font
+
+.memo_saturn_font_load_end:
+mov  r2,#0xAA                // Previous code
+lsl  r2,r2,#3
+pop  {pc}
+
+// ---------------------------------------------------------------------------------------
 // This hack fixes the scrolly sprite flashing by enabling the OBJ layer indefinitely
 // whenever a scrolly line is being executed.
 // ---------------------------------------------------------------------------------------
